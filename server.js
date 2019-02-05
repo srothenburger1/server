@@ -25,7 +25,6 @@ const database = {
       name:'Sally',
       password:'bananas',
       email:'sally@gmail.com',
-      password:'bananas',
       entries: 0,
       joined: new Date()
     }
