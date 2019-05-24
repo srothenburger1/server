@@ -25,6 +25,22 @@ const database = {
       email: "sally@gmail.com",
       entries: 0,
       joined: new Date()
+    },
+    {
+      id: "125",
+      name: "Steven",
+      password: "password",
+      email: "steven@rothenburger.dev",
+      entries: 0,
+      joined: new Date()
+    },
+    {
+      id: "126",
+      name: "Steven",
+      password: "a",
+      email: "123@123.com",
+      entries: 0,
+      joined: new Date()
     }
   ]
 };
@@ -33,30 +49,50 @@ app.get("/", (req, res) => {
   res.send(database.users);
 });
 
+
+// What to do if the server recieves a POST request from the signin
+// page.
 app.post("/signin", (req, res) => {
+
+
+  // FIXME: Hashing API
+
   // Load hash from your password DB.
-  bcrypt.compare("bacon", "hash", function(err, res) {
-    // res == true
-  });
-  bcrypt.compare("veggies", "hash", function(err, res) {
-    // res = false
-  });
-  if (
-    req.body.email === database.users[0].email &&
-    req.body.password === database.users[0].password
-  ) {
-    res.json(database.users[0]);
-  } else {
-    res.status(400).json("error logging in");
+  // bcrypt.compare("bacon", "hash", function(err, res) {
+  //   // res == true
+  // });
+  // bcrypt.compare("veggies", "hash", function(err, res) {
+  //   // res = false
+  // });
+
+
+
+// Authenticate username
+console.log("request",req.body)
+
+  for (let person of database.users){
+    console.log(person)
+    if (
+      req.body.email === person.email &&
+      req.body.password === person.password
+    ) {
+      res.json(person);
+    } else {
+      // FIXME: This status causes an error
+      // res.status(400).json("error logging in");
+    }
   }
-  res.json("signin");
-});
+    res.json("signin");
+
+  
+  });
 
 app.post("/register", (req, res) => {
-  const { email, name } = req.body;
+  const { email, name, password } = req.body;
   database.users.push({
     id: "125",
     name: name,
+    password:password,
     email: email,
     entries: 0,
     joined: new Date()
@@ -105,6 +141,6 @@ app.post("/image", (req, res) => {
 //   // res = false
 // });
 
-app.listen(3000, () => {
+app.listen(3001, () => {
   console.log("app is running on port 3000");
 });
