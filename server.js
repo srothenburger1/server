@@ -27,7 +27,7 @@ let hashPassword = password => {
 // START-------------------------------------
 
 app.get('/', (req, res) => {
-	res.send(database.users);
+	res.send("Server Running Successfully");
 });
 
 app.post('/signin', (req, res) => {
