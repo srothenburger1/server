@@ -86,21 +86,6 @@ app.post('/register', (req, res) => {
 		.catch(err => res.status(400).json('Error Registering'));
 });
 
-// app.get('/profile/:id', (req, res) => {
-// 	const { id } = req.params;
-// 	let found = false;
-
-// 	knex.select('*').from('users').where({
-// 		id:id
-// 	}).then(user=>{
-// 		res.json(user[0])
-// 	})
-
-// 	if (!found) {
-// 		res.status(400).json('not found');
-// 	}
-// });
-
 app.post('/image', (req, res) => {
 	const { id } = req.body;
 	let found = false;
