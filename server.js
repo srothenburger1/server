@@ -8,7 +8,7 @@ const knex = require('knex')({
 	client: 'pg',
 	connection: {
 		connectionString: process.env.DATABASE_URL,
-		ssl:true,
+		ssl: true,
 	},
 });
 
@@ -25,31 +25,31 @@ let hashPassword = password => {
 // START-------------------------------------
 
 app.get('/', (req, res) => {
-	res.send("Server Running Successfully");
+	res.send('Server Running Successfully');
 });
 
 app.post('/signin', (req, res) => {
-	
-knex.select("email","hash")
-	.from('login')
-	.where('email', '=',req.body.email )
-	.then(data=>{
-		const isValid = bcrypt.compareSync(req.body.password,data[0].hash)
+	knex
+		.select('email', 'hash')
+		.from('login')
+		.where('email', '=', req.body.email)
+		.then(data => {
+			const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
 
-		if(isValid){
-			return knex
-			.select('*')
-			.from('users')
-			.where("email",'=',req.body.email)
-			.then(user=>{
-				res.json(user[0])
-			})
-			.catch(err=>res.status(400).json('unable to get user'))
-		}else{
-			res.status(400).json('Wrong Credentials')
-		}
-	})
-	.catch(err=>res.status(400).json('wrong credentials'))
+			if (isValid) {
+				return knex
+					.select('*')
+					.from('users')
+					.where('email', '=', req.body.email)
+					.then(user => {
+						res.json(user[0]);
+					})
+					.catch(err => res.status(400).json('unable to get user'));
+			} else {
+				res.status(400).json('Wrong Credentials');
+			}
+		})
+		.catch(err => res.status(400).json('wrong credentials'));
 });
 
 app.post('/register', (req, res) => {
@@ -57,12 +57,13 @@ app.post('/register', (req, res) => {
 	let hash = hashPassword(password);
 
 	knex
-	// this transaction block basically makes sure
-	// that both inserts will pass before executing
-	// after you start the transaction block, you can use
-	// trx instead of knex
+		// this transaction block basically makes sure
+		// that both inserts will pass before executing
+		// after you start the transaction block, you can use
+		// trx instead of knex
 		.transaction(trx => {
-			trx.insert({
+			trx
+				.insert({
 					hash: hash,
 					email: email,
 				})
@@ -78,10 +79,10 @@ app.post('/register', (req, res) => {
 						})
 						.then(user => {
 							res.json(user[0]);
-						})
+						});
 				})
 				.then(trx.commit)
-				.catch(trx.rollback)
+				.catch(trx.rollback);
 		})
 		.catch(err => res.status(400).json('Error Registering'));
 });
@@ -101,6 +102,32 @@ app.post('/image', (req, res) => {
 	}
 });
 
-app.listen(process.env.PORT ||3001, () => {
+// bring back user info.
+
+app.post('/info', (req, res) => {
+	knex
+		.select('email', 'hash')
+		.from('login')
+		.where('email', '=', req.body.email)
+		.then(data => {
+			const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+
+			if (isValid) {
+				return knex
+					.select('*')
+					.from('users')
+					.where('email', '=', req.body.email)
+					.then(user => {
+						res.json(user[0]);
+					})
+					.catch(err => res.status(400).json('unable to get user'));
+			} else {
+				res.status(400).json('Wrong Credentials');
+			}
+		})
+		.catch(err => res.status(400).json('wrong credentials'));
+});
+
+app.listen(process.env.PORT || 3001, () => {
 	console.log(`app is running on port ${process.env.PORT}`);
 });
