@@ -105,6 +105,8 @@ app.post('/image', (req, res) => {
 // bring back user info.
 
 app.post('/info', (req, res) => {
+	
+	if(req.body.isSignedIn === true){
 	knex
 		.select('email', 'hash')
 		.from('login')
@@ -126,6 +128,9 @@ app.post('/info', (req, res) => {
 			}
 		})
 		.catch(err => res.status(400).json('wrong credentials'));
+	}else{
+		res.send("please sign in")
+	}
 });
 
 app.listen(process.env.PORT || 3001, () => {
