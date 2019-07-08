@@ -12,7 +12,6 @@ const knex = require('knex')({
 	},
 });
 
-
 // Middle Ware
 app.use(bodyParser.json());
 app.use(cors());
@@ -107,20 +106,24 @@ app.post('/image', (req, res) => {
 // bring back user info.
 
 app.post('/info', (req, res) => {
-	
-	if(req.body.isSignedIn === true){
-	knex
-		.transaction(trx=>{
-			trx
-			.where('email', '=',req.body.email)
-			.update({
-				email:req.body.email
+	if (req.body.isSignedIn === true) {
+		knex
+			.transaction(trx => {
+				trx
+					.where('email', '=', req.body.email)
+					.update({
+						email: req.body.email,
+					})
+					.then(trx.commit)
+					.then(user => {
+						res.json(user[0]);
+					})
+					.catch(trx.rollback);
+
 			})
-		})
-		
-		.catch(err => res.status(400).json('wrong credentials'));
-	}else{
-		res.send("please sign in")
+			.catch(err => res.status(400).json('wrong credentials'));
+	} else {
+		res.send('please sign in');
 	}
 });
 
