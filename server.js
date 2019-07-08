@@ -110,21 +110,14 @@ app.post('/info', (req, res) => {
 	
 	if(req.body.isSignedIn === true){
 	knex
-		.select('email')
-		.from('login')
-		.where('email', '=', req.body.email)
-		.then(data => {
-
-				return knex
-					.select('*')
-					.from('users')
-					.where('email', '=', req.body.email)
-					.then(user => {
-						res.json(user[0]);
-					})
-					.catch(err => res.status(400).json('unable to get user'));
-			
+		.transaction(trx=>{
+			trx
+			.where('email', '=',req.body.email)
+			.update({
+				email:req.body.email
+			})
 		})
+		
 		.catch(err => res.status(400).json('wrong credentials'));
 	}else{
 		res.send("please sign in")
