@@ -7,6 +7,8 @@
 
 ### 🏠 [Homepage](readmyface.herokuapp.com)
 
+### [Link To Main App](https://github.com/srothenburger1/facial_recognition_app)
+
 ## Author
 
 👤 **Steven Rothenburger**
