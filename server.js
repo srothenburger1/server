@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const cors = require('cors');
 const app = express();
 
+// This is currently set up to work on heroku.
 const knex = require('knex')({
 	client: 'pg',
 	connection: {
@@ -29,6 +30,7 @@ app.get('/', (req, res) => {
 	res.send('Server Running Successfully');
 });
 
+// Sign In Requests
 app.post('/signin', (req, res) => {
 	knex
 		.select('email', 'hash')
@@ -53,6 +55,7 @@ app.post('/signin', (req, res) => {
 		.catch(err => res.status(400).json('wrong credentials'));
 });
 
+// Register Requests
 app.post('/register', (req, res) => {
 	const { email, name, password } = req.body;
 	let hash = hashPassword(password);
@@ -86,45 +89,6 @@ app.post('/register', (req, res) => {
 				.catch(trx.rollback);
 		})
 		.catch(err => res.status(400).json('Error Registering'));
-});
-
-app.post('/image', (req, res) => {
-	const { id } = req.body;
-	let found = false;
-	database.users.forEach(user => {
-		if (user.id === id) {
-			found = true;
-			user.entries++;
-			return res.json(user.entries);
-		}
-	});
-	if (!found) {
-		res.status(400).json('not found');
-	}
-});
-
-// bring back user info.
-
-app.post('/info', (req, res) => {
-	if (req.body.isSignedIn === true) {
-		knex
-			.transaction(trx => {
-				trx
-					.where('email', '=', req.body.email)
-					.update({
-						email: req.body.email,
-					})
-					.then(trx.commit)
-					.then(user => {
-						res.json(user[0]);
-					})
-					.catch(trx.rollback);
-
-			})
-			.catch(err => res.status(400).json('wrong credentials'));
-	} else {
-		res.send('please sign in');
-	}
 });
 
 app.listen(process.env.PORT || 3001, () => {
